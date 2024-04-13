@@ -1,0 +1,4 @@
+
+#Envia o conteúdo do arquivo "produto-pao.json" para o endpoint /produtos via POST
+
+curl -X POST http://localhost:8080/produtos -H "Content-Type: application/json; Charset=utf-8" -d @produto-pao.json
