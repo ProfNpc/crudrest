@@ -1,8 +1,6 @@
 package com.belval.crudrest.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,18 +9,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.belval.crudrest.model.Produto;
+import com.belval.crudrest.repository.ProdutoRepository;
 
 @RestController
 public class ProdutoController {
 	
-	private static List<Produto> lista = new ArrayList<>();
-	private static int proxId = 1;
+	@Autowired
+	private ProdutoRepository repository;
 	
 	@GetMapping("/produtos")
 	public ResponseEntity<Iterable<Produto>> obterProdutos() {
 		return ResponseEntity
 				.status(HttpStatus.OK)
-				.body(lista);
+				.body(repository.findAll());
 	}
 	
 	
@@ -32,10 +31,10 @@ public class ProdutoController {
 	public ResponseEntity<Produto> criarProduto(
 			@RequestBody Produto produto) {
 		
-		produto.setId(proxId++);
+		//produto.setId(proxId++);
 		
 		System.out.println("Produto criado ... " + produto.toString());
-		lista.add(produto);
+		repository.save(produto);
 		
 		return ResponseEntity
 				.status(HttpStatus.CREATED)
