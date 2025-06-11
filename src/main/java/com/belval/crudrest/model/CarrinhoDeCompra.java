@@ -18,9 +18,21 @@ public class CarrinhoDeCompra {
 			mapItens.put(prod.getId(), itemCompra);
 		} else {
 			itemCompra.setQuantidade(itemCompra.getQuantidade().add(quantidade));
+			itemCompra.setValorItem(prod.getPreco().multiply(itemCompra.getQuantidade()));
 			if (itemCompra.getQuantidade().compareTo(BigDecimal.ZERO) <= 0) {
 				mapItens.remove(prod.getId());
 			}
 		}
 	}
+
+	public Map<Integer, ItemCompra> getMapItens() {
+		return mapItens;
+	}
+
+	public void setMapItens(Map<Integer, ItemCompra> mapItens) {
+		this.mapItens = mapItens;
+	}
+	
+	
+
 }

@@ -2,6 +2,7 @@ package com.belval.crudrest.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,7 +24,7 @@ public class Compra {
 	private BigDecimal total;
 	
 	@OneToMany(mappedBy = "compra")
-	private List<ItemCompra> itens;
+	private List<ItemCompra> itens = new ArrayList<>();
 	
 	public Compra() {
 		
