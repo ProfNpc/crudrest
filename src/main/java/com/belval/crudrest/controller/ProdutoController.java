@@ -5,10 +5,10 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -96,4 +96,29 @@ public class ProdutoController {
 
 	}
 
+	//Observação: para métodos que não sejam o GET e o POST é necessário colocar o -X(menos xis maiúsculo)
+	//curl -X DELETE http://localhost:8080/produtos/1 
+	@DeleteMapping("/produtos/{id}")
+	public ResponseEntity<Object> apagarProduto(
+			@PathVariable Integer id) {
+		
+		Optional<Produto> produto = repository.findById(id);
+		
+		if (produto.isEmpty()) {
+
+			return ResponseEntity
+					.status(HttpStatus.NOT_FOUND)
+					.body("Produto não encontrado!");
+		}
+		
+		Produto prod = produto.get();
+		repository.delete(prod);
+		
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body("Produto apagado com sucesso!");
+		
+
+	}
+	
 }
