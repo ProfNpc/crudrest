@@ -14,7 +14,7 @@ public class CarrinhoDeCompra {
 			itemCompra = new ItemCompra();
 			itemCompra.setProduto(prod);
 			itemCompra.setQuantidade(quantidade);
-			itemCompra.setValorItem(prod.getPreco());
+			itemCompra.setValorItem(prod.getPreco().multiply(quantidade));
 			mapItens.put(prod.getId(), itemCompra);
 		} else {
 			itemCompra.setQuantidade(itemCompra.getQuantidade().add(quantidade));

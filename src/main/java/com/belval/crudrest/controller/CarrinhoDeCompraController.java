@@ -56,7 +56,7 @@ public class CarrinhoDeCompraController {
 		return carrinho;
 	}
 	
-	//curl --header 'Set-Cookie: JSESSIONID=E71B745ED4194F2A4AA0D3C8EDC26580' -X POST http://localhost:8081/carrinho/1/1 -H "Content-Type: application/json; Charset=utf-8"
+	//curl --cookie 'JSESSIONID=E832AC98093A27ED47B0926BA2250D47' -X POST http://localhost:8081/carrinho/1/1 -H "Content-Type: application/json; Charset=utf-8"
 	@PostMapping("/carrinho/{idProduto}/{qtd}")
 	public ResponseEntity<Object> adicionarProduto(
 			@PathVariable Integer idProduto,

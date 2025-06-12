@@ -1,12 +1,14 @@
 package com.belval.crudrest.model;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Objects;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 
 @Entity
 //@Table(name = "TB_PROD")
@@ -18,6 +20,9 @@ public class Produto {
 	private String nome;
 	private String descricao;
 	private BigDecimal preco;
+	
+//	@OneToMany(mappedBy = "produto")
+//	private List<ItemCompra> itens;
 	
 	public Produto() {
 		
