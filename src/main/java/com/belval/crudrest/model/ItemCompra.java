@@ -3,6 +3,8 @@ package com.belval.crudrest.model;
 import java.math.BigDecimal;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,6 +26,8 @@ public class ItemCompra {
 	private BigDecimal valorItem;
 	
 	@ManyToOne
+	//https://www.baeldung.com/jackson-bidirectional-relationships-and-infinite-recursion
+	@JsonBackReference
 	private Compra compra;
 
 	public ItemCompra() {
