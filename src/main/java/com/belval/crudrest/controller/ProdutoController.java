@@ -123,50 +123,5 @@ public class ProdutoController {
 		return ResponseEntity
 				.status(HttpStatus.OK)
 				.body("Produto apagado com sucesso!");
-		
-
 	}
-	
-	private static final String UPLOAD_DIR = "./uploads/";
-	
-
-	@PostMapping("/upload/{fileName:.*}")
-	public ResponseEntity<String> uploadFile(
-			@PathVariable String fileName,
-			@RequestParam("file") MultipartFile file) {
-		
-		try {
-			if (file.isEmpty()) {
-				return ResponseEntity
-						.badRequest()
-						.body("Arquivo vazio!");
-						//.status(HttpStatus.BAD_REQUEST)
-						//.body("");
-			}
-			
-			Path dirPath = Paths.get(UPLOAD_DIR);
-			
-			//Path uploadPath = Paths.get(UPLOAD_DIR, fileName);
-			Path uploadPath = Paths.get(UPLOAD_DIR, file.getOriginalFilename());
-			
-			
-			if (!Files.exists(dirPath)) {
-				Files.createDirectories(dirPath);
-			}
-			
-			Files.createFile(uploadPath);
-			
-			// Save the file to the server
-			byte[] bytes = file.getBytes();
-			Files.write(uploadPath, bytes);
-			
-			return ResponseEntity.ok("Upload com sucesso!");
-		} catch (IOException e) {
-			e.printStackTrace();
-			return ResponseEntity
-					.badRequest()
-					.body("Arquivo vazio!");
-		}
-	}
-	
 }

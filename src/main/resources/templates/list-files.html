@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>List Files</title>
+</head>
+<body>
+    <h1>Files</h1>
+    <ul>
+        <li th:each="file : ${files}" >
+        	<a th:href="@{download/{file}(file=${file})}" th:text="${file}"></a>
+        	<a th:href="@{view/{file}(file=${file})}" th:text="[X]"></a>
+        </li>
+    </ul>
+    
+    <a th:href="@{upload}">Upload</a>
+</body>
+</html>
