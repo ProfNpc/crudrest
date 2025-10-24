@@ -7,7 +7,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import org.springframework.core.io.InputStreamResource;
@@ -89,42 +91,58 @@ public class UploadController {
 
 	@PostMapping("/upload")
 	public ResponseEntity<String> uploadFile(
-			@RequestParam("file") MultipartFile file) {
+			@RequestParam("file") MultipartFile[] files) {
 		
-		try {
-			if (file.isEmpty()) {
-				return ResponseEntity
-						.badRequest()
-						.body("Arquivo vazio!");
-						//.status(HttpStatus.BAD_REQUEST)
-						//.body("");
+		Map<String, MultipartFile> falhasUpload = new HashMap<>();
+		
+		for (MultipartFile file : files) {
+			try {
+				if (file.isEmpty()) {
+					return ResponseEntity
+							.badRequest()
+							.body("Arquivo vazio!");
+							//.status(HttpStatus.BAD_REQUEST)
+							//.body("");
+				}
+				
+				Path dirPath = Paths.get(UPLOAD_DIR);
+				
+				//Path uploadPath = Paths.get(UPLOAD_DIR, fileName);
+				Path uploadPath = Paths.get(UPLOAD_DIR, file.getOriginalFilename());
+				
+				
+				if (!Files.exists(dirPath)) {
+					Files.createDirectories(dirPath);
+				}
+				
+				Files.createFile(uploadPath);
+				
+				// Save the file to the server
+				byte[] bytes = file.getBytes();
+				Files.write(uploadPath, bytes);
+				
+				
+			} catch (IOException e) {
+				e.printStackTrace();
+				falhasUpload.put(file.getOriginalFilename(), file);
+			}			
+		}
+
+		if (falhasUpload.keySet().size() > 0) {
+			
+			StringBuffer mensagemDeErroUpload = new StringBuffer("Erro ao efetuar o upload dos seguintes arquivos:");
+			for (MultipartFile file : falhasUpload.values()) {
+				mensagemDeErroUpload.append(file.getOriginalFilename()).append("\n");
 			}
 			
-			Path dirPath = Paths.get(UPLOAD_DIR);
-			
-			//Path uploadPath = Paths.get(UPLOAD_DIR, fileName);
-			Path uploadPath = Paths.get(UPLOAD_DIR, file.getOriginalFilename());
-			
-			
-			if (!Files.exists(dirPath)) {
-				Files.createDirectories(dirPath);
-			}
-			
-			Files.createFile(uploadPath);
-			
-			// Save the file to the server
-			byte[] bytes = file.getBytes();
-			Files.write(uploadPath, bytes);
-			
-			return ResponseEntity.ok("Upload com sucesso!");
-		} catch (IOException e) {
-			e.printStackTrace();
 			return ResponseEntity
 					.badRequest()
-					.body("Arquivo vazio!");
+					.body(mensagemDeErroUpload.toString());			
 		}
+
+
+		return ResponseEntity.ok("Todos os arquivos foram recebidos com sucesso!");
 	}
-	
 	
     @GetMapping("/view/{fileName:.*}")
     public ResponseEntity<InputStreamResource> viewFile(
