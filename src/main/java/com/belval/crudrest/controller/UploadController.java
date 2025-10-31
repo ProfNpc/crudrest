@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +32,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.belval.crudrest.model.Arquivo;
 import com.belval.crudrest.repository.ArquivoRepository;
+
+import jakarta.xml.bind.DatatypeConverter;
 
 @Controller
 public class UploadController {
@@ -143,6 +147,7 @@ public class UploadController {
 				Arquivo arq = new Arquivo();
 				arq.setHash("hash");
 				arq.setConteudo(bytes);
+				arq.setHash(getHashFromByteArray(bytes));
 				arq.setContentType(file.getContentType());
 				repository.save(arq);
 				
@@ -166,6 +171,21 @@ public class UploadController {
 
 
 		return ResponseEntity.ok("Todos os arquivos foram recebidos com sucesso!");
+	}
+	
+	private String getHashFromByteArray(byte[] data) {
+		String hexHash = "";
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");//"SHA-256 Or "MD5", "SHA-1", etc.
+            byte[] hashBytes = md.digest(data);
+
+            // Convert the byte array hash to a hexadecimal string for display
+            hexHash = DatatypeConverter.printHexBinary(hashBytes).toLowerCase();
+            System.out.println("MD5 hash: " + hexHash);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return hexHash;
 	}
 	
     @GetMapping("/view/{fileName:.*}")
