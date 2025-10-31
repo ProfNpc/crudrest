@@ -1,5 +1,6 @@
 package com.belval.crudrest.controller;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -10,8 +11,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Stream;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -24,10 +28,25 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.belval.crudrest.model.Arquivo;
+import com.belval.crudrest.repository.ArquivoRepository;
+
 @Controller
 public class UploadController {
 	
+	@Autowired
+	private ArquivoRepository repository;
+	
 	private static final String UPLOAD_DIR = "./uploads/";
+
+	@GetMapping("/arquivos")
+	public ResponseEntity<List<String>> listArquivos(Model model) {
+		List<String> listaArqs = new ArrayList<>();
+		repository.findAll().forEach(arq -> {
+			listaArqs.add(arq.toString());
+		});
+		return ResponseEntity.ok(listaArqs);
+	}
 	
 	@GetMapping("/files")
 	public String listFiles(Model model) {
@@ -120,7 +139,12 @@ public class UploadController {
 				// Save the file to the server
 				byte[] bytes = file.getBytes();
 				Files.write(uploadPath, bytes);
-				
+
+				Arquivo arq = new Arquivo();
+				arq.setHash("hash");
+				arq.setConteudo(bytes);
+				arq.setContentType(file.getContentType());
+				repository.save(arq);
 				
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -167,6 +191,39 @@ public class UploadController {
         return ResponseEntity.ok()
                 .headers(headers)
                 .contentLength(file.length())
+                .contentType(MediaType.parseMediaType(contentType))
+                .body(inputStreamResource);
+    }
+    
+    @GetMapping("/view2/{fileId}")
+    public ResponseEntity<InputStreamResource> viewFile(
+    		@PathVariable UUID fileId) throws IOException {
+    	
+       
+        Optional<Arquivo> arqOpt = repository.findById(fileId);
+        if (arqOpt.isEmpty()) {
+        	return ResponseEntity.notFound().build();
+        }
+        
+        Arquivo arquivo = arqOpt.get();
+
+        String fileName = arquivo.getId().toString();
+        // Determine the content type based on the file extension
+        String contentType = arquivo.getContentType();
+
+        HttpHeaders headers = new HttpHeaders();
+        // The "inline" disposition tells the browser to display the file
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + fileName + "\"");
+
+        InputStreamResource inputStreamResource = 
+        	new InputStreamResource(
+        		new ByteArrayInputStream(arquivo.getConteudo()));
+
+        int fileLen = arquivo.getConteudo().length;
+        
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentLength(fileLen)
                 .contentType(MediaType.parseMediaType(contentType))
                 .body(inputStreamResource);
     }
