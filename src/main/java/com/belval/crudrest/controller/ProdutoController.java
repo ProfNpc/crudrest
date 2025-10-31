@@ -1,11 +1,6 @@
 package com.belval.crudrest.controller;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.belval.crudrest.model.Produto;
 import com.belval.crudrest.repository.ProdutoRepository;
@@ -69,6 +62,7 @@ public class ProdutoController {
 		//produto.setId(proxId++);
 		
 		System.out.println("Produto criado ... " + produto.toString());
+		produto.setDataCriacao(LocalDateTime.now());
 		repository.save(produto);
 		
 		return ResponseEntity

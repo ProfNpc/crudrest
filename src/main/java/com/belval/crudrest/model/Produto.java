@@ -1,14 +1,13 @@
 package com.belval.crudrest.model;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 
 @Entity
 //@Table(name = "TB_PROD")
@@ -20,6 +19,7 @@ public class Produto {
 	private String nome;
 	private String descricao;
 	private BigDecimal preco;
+	private LocalDateTime dataCriacao;
 	
 //	@OneToMany(mappedBy = "produto")
 //	private List<ItemCompra> itens;
@@ -63,11 +63,20 @@ public class Produto {
 	public void setPreco(BigDecimal preco) {
 		this.preco = preco;
 	}
+	
+	public LocalDateTime getDataCriacao() {
+		return dataCriacao;
+	}
+
+
+	public void setDataCriacao(LocalDateTime dataCriacao) {
+		this.dataCriacao = dataCriacao;
+	}
 
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(descricao, id, nome, preco);
+		return Objects.hash(id);
 	}
 
 
@@ -80,16 +89,13 @@ public class Produto {
 		if (getClass() != obj.getClass())
 			return false;
 		Produto other = (Produto) obj;
-		return Objects.equals(descricao, other.descricao) && Objects.equals(id, other.id)
-				&& Objects.equals(nome, other.nome) && Objects.equals(preco, other.preco);
+		return Objects.equals(id, other.id);
 	}
 
 
 	@Override
 	public String toString() {
-		return "Produto [id=" + id + ", nome=" + nome + ", descricao=" + descricao + ", preco=" + preco + "]";
+		return "Produto [id=" + id + ", nome=" + nome + ", descricao=" + descricao + ", preco=" + preco
+				+ ", dataCriacao=" + dataCriacao + "]";
 	}
-	
-	
-
 }
