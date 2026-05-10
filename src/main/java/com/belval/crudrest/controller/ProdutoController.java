@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -31,14 +32,21 @@ public class ProdutoController {
 	public ResponseEntity<Iterable<Produto>> obterProdutos() {
 		return ResponseEntity
 				.status(HttpStatus.OK)
-				.body(repository.findAll());
+				.body(repository.findByAtivoTrue());
+	}
+	
+	@GetMapping("/produtos/inativos")
+	public ResponseEntity<Iterable<Produto>> obterProdutosInativos() {
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(repository.findByAtivoFalse());
 	}
 	
 	@GetMapping("/produtos/{id}")
 	public ResponseEntity<Object> buscarPorId(
 			@PathVariable(value = "id") Integer id) {
 		
-		Optional<Produto> produto = repository.findById(id);
+		Optional<Produto> produto = repository.findByIdAndAtivoTrue(id);
 		
 		if (produto.isPresent()) {
 			return ResponseEntity
@@ -62,6 +70,7 @@ public class ProdutoController {
 		//produto.setId(proxId++);
 		
 		System.out.println("Produto criado ... " + produto.toString());
+		produto.setAtivo(true);
 		produto.setDataCriacao(LocalDateTime.now());
 		repository.save(produto);
 		
@@ -79,7 +88,7 @@ public class ProdutoController {
 			@PathVariable Integer id,
 			@RequestBody Produto prod) {
 		
-		Optional<Produto> produto = repository.findById(id);
+		Optional<Produto> produto = repository.findByIdAndAtivoTrue(id);
 		
 		if (produto.isEmpty()) {
 
@@ -89,6 +98,7 @@ public class ProdutoController {
 		}
 		
 		prod.setId(id);
+		prod.setDataCriacao(produto.get().getDataCriacao());
 		repository.save(prod);
 		
 		return ResponseEntity
@@ -104,7 +114,7 @@ public class ProdutoController {
 	public ResponseEntity<Object> apagarProduto(
 			@PathVariable Integer id) {
 		
-		Optional<Produto> produto = repository.findById(id);
+		Optional<Produto> produto = repository.findByIdAndAtivoTrue(id);
 		
 		if (produto.isEmpty()) {
 
@@ -114,10 +124,30 @@ public class ProdutoController {
 		}
 		
 		Produto prod = produto.get();
-		repository.delete(prod);
+		prod.setAtivo(false);
+		repository.save(prod);
 		
 		return ResponseEntity
 				.status(HttpStatus.OK)
 				.body("Produto apagado com sucesso!");
 	}
+	
+    // PATCH /produtos/{id}/reativar — torna um produto inativo em ativo
+    @PatchMapping("/produtos/{id}/reativar")
+    public ResponseEntity<Produto> reativarProduto(@PathVariable Integer id) {
+        Optional<Produto> optionalReativar = repository.findById(id);
+        if (!optionalReativar.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        Produto produto = optionalReativar.get();
+        if (produto.getAtivo()) {
+            // produto já está ativo — não há nada a fazer
+            return new ResponseEntity<>(produto, HttpStatus.OK);
+        }
+        produto.setAtivo(true);
+        return new ResponseEntity<>(
+        	repository.save(produto), 
+        	HttpStatus.OK);
+    }
+	
 }
