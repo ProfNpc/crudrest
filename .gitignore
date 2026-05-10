@@ -7,7 +7,6 @@
 *~
 .#*
 .*.md.html
-.DS_Store
 .attach_pid*
 .classpath
 .factorypath
@@ -17,7 +16,6 @@
 .recommenders
 .settings
 .springBeans
-.vscode
 /code
 MANIFEST.MF
 _site/
@@ -40,10 +38,33 @@ secrets.yml
 .gradletasknamecache
 .sts4-cache
 .git-hooks/
-node_modules
 
 **.mv.db
 
 **.trace.db
 
 uploads/**
+
+
+# Dependencies
+node_modules/
+dist/
+
+# Environment Variables (Crucial for security)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# Editor/OS Specific
+.vscode/
+.idea/
+.DS_Store
+*.swp
