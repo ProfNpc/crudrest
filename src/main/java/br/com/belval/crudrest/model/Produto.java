@@ -5,15 +5,34 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
 /**
  * Corresponde à tabela Produto
  */
+@Entity
+@Table(name = "produto")
 public class Produto {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
+    
+    @Column(name = "nome", nullable = false, length = 100)
 	private String nome;
+    
+    @Column(name = "descricao", length = 500)
 	private String descricao;
+    
+    @Column(name = "preco", nullable = false, precision = 10, scale = 2)
 	private BigDecimal preco;
+    
+    @Column(name = "data_criacao")
 	private LocalDateTime dataCriacao;
 	
 	/**
